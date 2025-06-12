@@ -494,7 +494,7 @@ STATIC mp_obj_t usecp256k1_ec_privkey_negate(mp_obj_t arg){
     vstr_init_len(&vstr, 32);
     memcpy((byte*)vstr.buf, buf.buf, 32);
 
-    int res = secp256k1_ec_privkey_negate(ctx, vstr.buf);
+    int res = secp256k1_ec_privkey_negate(ctx, (unsigned char *)vstr.buf);
     if(!res){ // never happens according to the API
         mp_raise_ValueError(MP_ERROR_TEXT("Failed to negate the private key"));
         return mp_const_none;
@@ -576,7 +576,7 @@ STATIC mp_obj_t usecp256k1_ec_privkey_add(mp_obj_t privarg, const mp_obj_t tweak
     vstr_init_len(&priv2, 32);
     memcpy((byte*)priv2.buf, privbuf.buf, 32);
 
-    int res = secp256k1_ec_privkey_tweak_add(ctx, priv2.buf, tweakbuf.buf);
+    int res = secp256k1_ec_privkey_tweak_add(ctx, (unsigned char *)priv2.buf, tweakbuf.buf);
     if(!res){ // never happens according to the API
         mp_raise_ValueError(MP_ERROR_TEXT("Failed to tweak the private key"));
         return mp_const_none;
@@ -821,7 +821,6 @@ STATIC mp_obj_t usecp256k1_keypair_create(mp_obj_t arg){
 
     vstr_t vstr;
     vstr_init_len(&vstr, 96);
-    int parity = 0;
 
     int res = secp256k1_keypair_create(ctx, (secp256k1_keypair *)vstr.buf, buf.buf);
     if(!res){
@@ -1228,9 +1227,9 @@ STATIC mp_obj_t usecp256k1_pedersen_blind_generator_blind_sum(mp_uint_t n_args, 
         mp_get_buffer(vbfs->items[i], &buf, MP_BUFFER_READ);
         if(i == n_total-1){
             memcpy(vstr.buf, buf.buf, 32);
-            bfactors[i] = vstr.buf;
+            bfactors[i] = (unsigned char *)vstr.buf;
         }else{
-            bfactors[i] = buf.buf;
+            bfactors[i] = (unsigned char *)buf.buf;
         }
     }
     int res = secp256k1_pedersen_blind_generator_blind_sum(ctx, value, gens, bfactors, n_total, n_inputs);
@@ -1470,7 +1469,7 @@ STATIC mp_obj_t usecp256k1_surjectionproof_serialize(const mp_obj_t arg){
     vstr_init_len(&vstr, l);
     size_t l0 = l;
 
-    int res = secp256k1_surjectionproof_serialize(ctx, vstr.buf, &l, ptr);
+    int res = secp256k1_surjectionproof_serialize(ctx, (unsigned char *)vstr.buf, &l, ptr);
     if(!res){
         mp_raise_ValueError(MP_ERROR_TEXT("Failed to serialize surj proof"));
         return mp_const_none;
@@ -1557,7 +1556,7 @@ STATIC mp_obj_t usecp256k1_rangeproof_sign(mp_uint_t n_args, const mp_obj_t *arg
     vstr_t vstr;
     size_t prooflen = 5200;
     vstr_init_len(&vstr, 5200);
-    int res = secp256k1_rangeproof_sign(ctx, vstr.buf, &prooflen,
+    int res = secp256k1_rangeproof_sign(ctx, (unsigned char *)vstr.buf, &prooflen,
                 min_value, &commit, vbf.buf, nonce.buf,
                 exp, min_bits, value, msg.buf, msg.len, extra.buf, extra.len, &gen);
     if(!res){
@@ -1722,8 +1721,8 @@ STATIC mp_obj_t usecp256k1_rangeproof_rewind(mp_uint_t n_args, const mp_obj_t *a
     uint64_t min_value;
     uint64_t max_value;
 
-    int res = secp256k1_rangeproof_rewind(ctx, vbf_out.buf, &value_out,
-                            msg.buf, &msglenout,
+    int res = secp256k1_rangeproof_rewind(ctx, (unsigned char *)vbf_out.buf,
+                            &value_out, (unsigned char *)msg.buf, &msglenout,
                             nonce.buf, &min_value, &max_value,
                             value_commitment.buf, proof.buf, proof.len,
                             script_pubkey.buf, script_pubkey.len,
@@ -1886,8 +1885,9 @@ STATIC mp_obj_t usecp256k1_rangeproof_rewind_from(mp_uint_t n_args, const mp_obj
     uint64_t min_value;
     uint64_t max_value;
 
-    int res = secp256k1_rangeproof_rewind_preallocated(ctx, vbf_out.buf, &value_out,
-                            msg.buf, &msglenout,
+    int res = secp256k1_rangeproof_rewind_preallocated(ctx,
+                            (unsigned char *)vbf_out.buf, &value_out,
+                            (unsigned char *)msg.buf, &msglenout,
                             nonce.buf, &min_value, &max_value,
                             value_commitment.buf, (void*)memptr, prooflen,
                             script_pubkey.buf, script_pubkey.len,
