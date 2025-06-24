@@ -27,8 +27,8 @@
 // global context
 #define PREALLOCATED_CTX_SIZE 880 // 440 for 32-bit. FIXME: autodetect
 
-STATIC unsigned char preallocated_ctx[PREALLOCATED_CTX_SIZE];
-STATIC secp256k1_context * ctx = NULL;
+static unsigned char preallocated_ctx[PREALLOCATED_CTX_SIZE];
+static secp256k1_context * ctx = NULL;
 
 void maybe_init_ctx(){
     if(ctx != NULL){
@@ -39,15 +39,15 @@ void maybe_init_ctx(){
 }
 
 
-STATIC mp_obj_t usecp256k1_context_preallocated_size(){
+static mp_obj_t usecp256k1_context_preallocated_size(){
     size_t size = secp256k1_context_preallocated_size(SECP256K1_CONTEXT_VERIFY | SECP256K1_CONTEXT_SIGN);
     return mp_obj_new_int_from_ull(size);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(usecp256k1_context_preallocated_size_obj, usecp256k1_context_preallocated_size);
+static MP_DEFINE_CONST_FUN_OBJ_0(usecp256k1_context_preallocated_size_obj, usecp256k1_context_preallocated_size);
 
 
 // randomize context using 32-byte seed
-STATIC mp_obj_t usecp256k1_context_randomize(const mp_obj_t seed){
+static mp_obj_t usecp256k1_context_randomize(const mp_obj_t seed){
     maybe_init_ctx();
     mp_buffer_info_t seedbuf;
     mp_get_buffer_raise(seed, &seedbuf, MP_BUFFER_READ);
@@ -62,10 +62,10 @@ STATIC mp_obj_t usecp256k1_context_randomize(const mp_obj_t seed){
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_context_randomize_obj, usecp256k1_context_randomize);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_context_randomize_obj, usecp256k1_context_randomize);
 
 // create public key from private key
-STATIC mp_obj_t usecp256k1_ec_pubkey_create(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ec_pubkey_create(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t secretbuf;
     mp_get_buffer_raise(arg, &secretbuf, MP_BUFFER_READ);
@@ -86,10 +86,10 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_create(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_pubkey_create_obj, usecp256k1_ec_pubkey_create);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_pubkey_create_obj, usecp256k1_ec_pubkey_create);
 
 // parse sec-encoded public key
-STATIC mp_obj_t usecp256k1_ec_pubkey_parse(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ec_pubkey_parse(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t secbuf;
     mp_get_buffer_raise(arg, &secbuf, MP_BUFFER_READ);
@@ -125,10 +125,10 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_parse(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_pubkey_parse_obj, usecp256k1_ec_pubkey_parse);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_pubkey_parse_obj, usecp256k1_ec_pubkey_parse);
 
 // serialize public key
-STATIC mp_obj_t usecp256k1_ec_pubkey_serialize(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_ec_pubkey_serialize(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     mp_buffer_info_t pubbuf;
     mp_get_buffer_raise(args[0], &pubbuf, MP_BUFFER_READ);
@@ -155,10 +155,10 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_serialize(mp_uint_t n_args, const mp_obj_t 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ec_pubkey_serialize_obj, 1, usecp256k1_ec_pubkey_serialize);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ec_pubkey_serialize_obj, 1, usecp256k1_ec_pubkey_serialize);
 
 // parse compact ecdsa signature
-STATIC mp_obj_t usecp256k1_ecdsa_signature_parse_compact(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ecdsa_signature_parse_compact(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -179,10 +179,10 @@ STATIC mp_obj_t usecp256k1_ecdsa_signature_parse_compact(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_parse_compact_obj, usecp256k1_ecdsa_signature_parse_compact);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_parse_compact_obj, usecp256k1_ecdsa_signature_parse_compact);
 
 // parse der ecdsa signature
-STATIC mp_obj_t usecp256k1_ecdsa_signature_parse_der(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ecdsa_signature_parse_der(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -199,10 +199,10 @@ STATIC mp_obj_t usecp256k1_ecdsa_signature_parse_der(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_parse_der_obj, usecp256k1_ecdsa_signature_parse_der);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_parse_der_obj, usecp256k1_ecdsa_signature_parse_der);
 
 // serialize der ecdsa signature
-STATIC mp_obj_t usecp256k1_ecdsa_signature_serialize_der(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ecdsa_signature_serialize_der(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -226,10 +226,10 @@ STATIC mp_obj_t usecp256k1_ecdsa_signature_serialize_der(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_serialize_der_obj, usecp256k1_ecdsa_signature_serialize_der);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_serialize_der_obj, usecp256k1_ecdsa_signature_serialize_der);
 
 // serialize compact ecdsa signature
-STATIC mp_obj_t usecp256k1_ecdsa_signature_serialize_compact(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ecdsa_signature_serialize_compact(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -245,10 +245,10 @@ STATIC mp_obj_t usecp256k1_ecdsa_signature_serialize_compact(const mp_obj_t arg)
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_serialize_compact_obj, usecp256k1_ecdsa_signature_serialize_compact);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_serialize_compact_obj, usecp256k1_ecdsa_signature_serialize_compact);
 
 // verify ecdsa signature
-STATIC mp_obj_t usecp256k1_ecdsa_verify(const mp_obj_t sigarg, const mp_obj_t msgarg, const mp_obj_t pubkeyarg){
+static mp_obj_t usecp256k1_ecdsa_verify(const mp_obj_t sigarg, const mp_obj_t msgarg, const mp_obj_t pubkeyarg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(sigarg, &buf, MP_BUFFER_READ);
@@ -282,10 +282,10 @@ STATIC mp_obj_t usecp256k1_ecdsa_verify(const mp_obj_t sigarg, const mp_obj_t ms
     return mp_const_false;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(usecp256k1_ecdsa_verify_obj, usecp256k1_ecdsa_verify);
+static MP_DEFINE_CONST_FUN_OBJ_3(usecp256k1_ecdsa_verify_obj, usecp256k1_ecdsa_verify);
 
 // normalize ecdsa signature
-STATIC mp_obj_t usecp256k1_ecdsa_signature_normalize(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ecdsa_signature_normalize(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -303,10 +303,10 @@ STATIC mp_obj_t usecp256k1_ecdsa_signature_normalize(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_normalize_obj, usecp256k1_ecdsa_signature_normalize);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ecdsa_signature_normalize_obj, usecp256k1_ecdsa_signature_normalize);
 
 // same as secp256k1_nonce_function_rfc6979
-STATIC mp_obj_t usecp256k1_nonce_function_default(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_nonce_function_default(mp_uint_t n_args, const mp_obj_t *args){
     mp_buffer_info_t msgbuf;
     mp_get_buffer_raise(args[0], &msgbuf, MP_BUFFER_READ);
     if(msgbuf.len != 32){
@@ -350,12 +350,12 @@ STATIC mp_obj_t usecp256k1_nonce_function_default(mp_uint_t n_args, const mp_obj
     }
     return mp_obj_new_bytes_from_vstr(&nonce);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_nonce_function_default_obj, 2, usecp256k1_nonce_function_default);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_nonce_function_default_obj, 2, usecp256k1_nonce_function_default);
 
-STATIC mp_obj_t mp_nonce_callback = NULL;
-STATIC mp_obj_t mp_nonce_data = NULL;
+static mp_obj_t mp_nonce_callback = NULL;
+static mp_obj_t mp_nonce_data = NULL;
 
-STATIC int usecp256k1_nonce_function(
+static int usecp256k1_nonce_function(
     unsigned char *nonce32,
     const unsigned char *msg32,
     const unsigned char *key32,
@@ -408,7 +408,7 @@ STATIC int usecp256k1_nonce_function(
 }
 
 // msg, secret, [callback, data]
-STATIC mp_obj_t usecp256k1_ecdsa_sign(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_ecdsa_sign(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     mp_nonce_data = NULL;
     if(n_args < 2){
@@ -459,10 +459,10 @@ STATIC mp_obj_t usecp256k1_ecdsa_sign(mp_uint_t n_args, const mp_obj_t *args){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ecdsa_sign_obj, 2, usecp256k1_ecdsa_sign);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ecdsa_sign_obj, 2, usecp256k1_ecdsa_sign);
 
 // verify secret key
-STATIC mp_obj_t usecp256k1_ec_seckey_verify(const mp_obj_t arg){
+static mp_obj_t usecp256k1_ec_seckey_verify(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -478,10 +478,10 @@ STATIC mp_obj_t usecp256k1_ec_seckey_verify(const mp_obj_t arg){
     return mp_const_false;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_seckey_verify_obj, usecp256k1_ec_seckey_verify);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_seckey_verify_obj, usecp256k1_ec_seckey_verify);
 
 // return N - secret key
-STATIC mp_obj_t usecp256k1_ec_privkey_negate(mp_obj_t arg){
+static mp_obj_t usecp256k1_ec_privkey_negate(mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -502,10 +502,10 @@ STATIC mp_obj_t usecp256k1_ec_privkey_negate(mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_privkey_negate_obj, usecp256k1_ec_privkey_negate);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_privkey_negate_obj, usecp256k1_ec_privkey_negate);
 
 // return neg of pubkey
-STATIC mp_obj_t usecp256k1_ec_pubkey_negate(mp_obj_t arg){
+static mp_obj_t usecp256k1_ec_pubkey_negate(mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -526,10 +526,10 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_negate(mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_pubkey_negate_obj, usecp256k1_ec_pubkey_negate);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_ec_pubkey_negate_obj, usecp256k1_ec_pubkey_negate);
 
 // tweak private key in place
-STATIC mp_obj_t usecp256k1_ec_privkey_tweak_add(mp_obj_t privarg, const mp_obj_t tweakarg){
+static mp_obj_t usecp256k1_ec_privkey_tweak_add(mp_obj_t privarg, const mp_obj_t tweakarg){
     maybe_init_ctx();
     mp_buffer_info_t privbuf;
     mp_get_buffer_raise(privarg, &privbuf, MP_BUFFER_READ);
@@ -553,10 +553,10 @@ STATIC mp_obj_t usecp256k1_ec_privkey_tweak_add(mp_obj_t privarg, const mp_obj_t
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_privkey_tweak_add_obj, usecp256k1_ec_privkey_tweak_add);
+static MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_privkey_tweak_add_obj, usecp256k1_ec_privkey_tweak_add);
 
 // add private key
-STATIC mp_obj_t usecp256k1_ec_privkey_add(mp_obj_t privarg, const mp_obj_t tweakarg){
+static mp_obj_t usecp256k1_ec_privkey_add(mp_obj_t privarg, const mp_obj_t tweakarg){
     maybe_init_ctx();
     mp_buffer_info_t privbuf;
     mp_get_buffer_raise(privarg, &privbuf, MP_BUFFER_READ);
@@ -584,10 +584,10 @@ STATIC mp_obj_t usecp256k1_ec_privkey_add(mp_obj_t privarg, const mp_obj_t tweak
     return mp_obj_new_bytes_from_vstr(&priv2);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_privkey_add_obj, usecp256k1_ec_privkey_add);
+static MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_privkey_add_obj, usecp256k1_ec_privkey_add);
 
 // tweak public key in place (add tweak * Generator)
-STATIC mp_obj_t usecp256k1_ec_pubkey_tweak_add(mp_obj_t pubarg, const mp_obj_t tweakarg){
+static mp_obj_t usecp256k1_ec_pubkey_tweak_add(mp_obj_t pubarg, const mp_obj_t tweakarg){
     maybe_init_ctx();
     mp_buffer_info_t pubbuf;
     mp_get_buffer_raise(pubarg, &pubbuf, MP_BUFFER_READ);
@@ -614,10 +614,10 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_tweak_add(mp_obj_t pubarg, const mp_obj_t t
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_pubkey_tweak_add_obj, usecp256k1_ec_pubkey_tweak_add);
+static MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_pubkey_tweak_add_obj, usecp256k1_ec_pubkey_tweak_add);
 
 // add tweak * Generator
-STATIC mp_obj_t usecp256k1_ec_pubkey_add(mp_obj_t pubarg, const mp_obj_t tweakarg){
+static mp_obj_t usecp256k1_ec_pubkey_add(mp_obj_t pubarg, const mp_obj_t tweakarg){
     maybe_init_ctx();
     mp_buffer_info_t pubbuf;
     mp_get_buffer_raise(pubarg, &pubbuf, MP_BUFFER_READ);
@@ -647,10 +647,10 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_add(mp_obj_t pubarg, const mp_obj_t tweakar
     return mp_obj_new_bytes_from_vstr(&pubbuf2);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_pubkey_add_obj, usecp256k1_ec_pubkey_add);
+static MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_pubkey_add_obj, usecp256k1_ec_pubkey_add);
 
 // tweak private key in place (multiply by tweak)
-STATIC mp_obj_t usecp256k1_ec_privkey_tweak_mul(mp_obj_t privarg, const mp_obj_t tweakarg){
+static mp_obj_t usecp256k1_ec_privkey_tweak_mul(mp_obj_t privarg, const mp_obj_t tweakarg){
     maybe_init_ctx();
     mp_buffer_info_t privbuf;
     mp_get_buffer_raise(privarg, &privbuf, MP_BUFFER_READ);
@@ -674,10 +674,10 @@ STATIC mp_obj_t usecp256k1_ec_privkey_tweak_mul(mp_obj_t privarg, const mp_obj_t
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_privkey_tweak_mul_obj, usecp256k1_ec_privkey_tweak_mul);
+static MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_privkey_tweak_mul_obj, usecp256k1_ec_privkey_tweak_mul);
 
 // tweak public key in place (multiply by tweak)
-STATIC mp_obj_t usecp256k1_ec_pubkey_tweak_mul(mp_obj_t pubarg, const mp_obj_t tweakarg){
+static mp_obj_t usecp256k1_ec_pubkey_tweak_mul(mp_obj_t pubarg, const mp_obj_t tweakarg){
     maybe_init_ctx();
     mp_buffer_info_t pubbuf;
     mp_get_buffer_raise(pubarg, &pubbuf, MP_BUFFER_READ);
@@ -704,10 +704,10 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_tweak_mul(mp_obj_t pubarg, const mp_obj_t t
     return mp_const_none;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_pubkey_tweak_mul_obj, usecp256k1_ec_pubkey_tweak_mul);
+static MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_ec_pubkey_tweak_mul_obj, usecp256k1_ec_pubkey_tweak_mul);
 
 // adds public keys
-STATIC mp_obj_t usecp256k1_ec_pubkey_combine(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_ec_pubkey_combine(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     secp256k1_pubkey pubkey;
     secp256k1_pubkey ** pubkeys;
@@ -741,11 +741,11 @@ STATIC mp_obj_t usecp256k1_ec_pubkey_combine(mp_uint_t n_args, const mp_obj_t *a
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ec_pubkey_combine_obj, 2, usecp256k1_ec_pubkey_combine);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ec_pubkey_combine_obj, 2, usecp256k1_ec_pubkey_combine);
 
 /**************************** schnorrsig ****************************/
 
-STATIC mp_obj_t usecp256k1_xonly_pubkey_from_pubkey(mp_obj_t arg){
+static mp_obj_t usecp256k1_xonly_pubkey_from_pubkey(mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -770,10 +770,10 @@ STATIC mp_obj_t usecp256k1_xonly_pubkey_from_pubkey(mp_obj_t arg){
     return mp_obj_new_tuple(2, items);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_xonly_pubkey_from_pubkey_obj, usecp256k1_xonly_pubkey_from_pubkey);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_xonly_pubkey_from_pubkey_obj, usecp256k1_xonly_pubkey_from_pubkey);
 
 
-STATIC mp_obj_t usecp256k1_schnorrsig_verify(const mp_obj_t sigarg, const mp_obj_t msgarg, const mp_obj_t pubkeyarg){
+static mp_obj_t usecp256k1_schnorrsig_verify(const mp_obj_t sigarg, const mp_obj_t msgarg, const mp_obj_t pubkeyarg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(sigarg, &buf, MP_BUFFER_READ);
@@ -800,17 +800,17 @@ STATIC mp_obj_t usecp256k1_schnorrsig_verify(const mp_obj_t sigarg, const mp_obj
     secp256k1_xonly_pubkey pub;
     memcpy(pub.data, buf.buf, 64);
 
-    int res = secp256k1_schnorrsig_verify(ctx, sig, msg, &pub);
+    int res = secp256k1_schnorrsig_verify(ctx, sig, msg, sizeof(msg), &pub);
     if(res){
         return mp_const_true;
     }
     return mp_const_false;
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(usecp256k1_schnorrsig_verify_obj, usecp256k1_schnorrsig_verify);
+static MP_DEFINE_CONST_FUN_OBJ_3(usecp256k1_schnorrsig_verify_obj, usecp256k1_schnorrsig_verify);
 
 
-STATIC mp_obj_t usecp256k1_keypair_create(mp_obj_t arg){
+static mp_obj_t usecp256k1_keypair_create(mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -830,11 +830,11 @@ STATIC mp_obj_t usecp256k1_keypair_create(mp_obj_t arg){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_keypair_create_obj, usecp256k1_keypair_create);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_keypair_create_obj, usecp256k1_keypair_create);
 
 
 // msg, secret, [callback, data]
-STATIC mp_obj_t usecp256k1_schnorrsig_sign(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_schnorrsig_sign(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     mp_nonce_data = NULL;
     if(n_args < 2){
@@ -871,7 +871,7 @@ STATIC mp_obj_t usecp256k1_schnorrsig_sign(mp_uint_t n_args, const mp_obj_t *arg
 
     int res=0;
     if(n_args == 2){
-        res = secp256k1_schnorrsig_sign(ctx, sig, msgbuf.buf, (secp256k1_keypair *)keypair, NULL, NULL);
+        res = secp256k1_schnorrsig_sign32(ctx, sig, msgbuf.buf, (secp256k1_keypair *)keypair, NULL);
     }else if(n_args >= 3){
         mp_nonce_callback = args[2];
         if(n_args > 3){
@@ -882,7 +882,7 @@ STATIC mp_obj_t usecp256k1_schnorrsig_sign(mp_uint_t n_args, const mp_obj_t *arg
             }
             data = databuf.buf;
         }
-        res = secp256k1_schnorrsig_sign(ctx, sig, msgbuf.buf, (secp256k1_keypair *)keypair, NULL, data);
+        res = secp256k1_schnorrsig_sign32(ctx, sig, msgbuf.buf, (secp256k1_keypair *)keypair, data);
     }
     if(!res){
         mp_raise_ValueError(MP_ERROR_TEXT("Failed to sign"));
@@ -896,12 +896,12 @@ STATIC mp_obj_t usecp256k1_schnorrsig_sign(mp_uint_t n_args, const mp_obj_t *arg
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_schnorrsig_sign_obj, 2, usecp256k1_schnorrsig_sign);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_schnorrsig_sign_obj, 2, usecp256k1_schnorrsig_sign);
 
 /**************************** recoverable ***************************/
 
 // msg, secret, [callback, data]
-STATIC mp_obj_t usecp256k1_ecdsa_sign_recoverable(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_ecdsa_sign_recoverable(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     mp_nonce_data = NULL;
     if(n_args < 2){
@@ -952,11 +952,11 @@ STATIC mp_obj_t usecp256k1_ecdsa_sign_recoverable(mp_uint_t n_args, const mp_obj
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ecdsa_sign_recoverable_obj, 2, usecp256k1_ecdsa_sign_recoverable);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_ecdsa_sign_recoverable_obj, 2, usecp256k1_ecdsa_sign_recoverable);
 
 /******************************* zkp ********************************/
 
-STATIC mp_obj_t usecp256k1_generator_generate_blinded(const mp_obj_t assetarg, const mp_obj_t abfarg){
+static mp_obj_t usecp256k1_generator_generate_blinded(const mp_obj_t assetarg, const mp_obj_t abfarg){
     maybe_init_ctx();
     mp_buffer_info_t assetbuf;
     mp_get_buffer_raise(assetarg, &assetbuf, MP_BUFFER_READ);
@@ -985,9 +985,9 @@ STATIC mp_obj_t usecp256k1_generator_generate_blinded(const mp_obj_t assetarg, c
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_generator_generate_blinded_obj, usecp256k1_generator_generate_blinded);
+static MP_DEFINE_CONST_FUN_OBJ_2(usecp256k1_generator_generate_blinded_obj, usecp256k1_generator_generate_blinded);
 
-STATIC mp_obj_t usecp256k1_generator_generate(const mp_obj_t assetarg){
+static mp_obj_t usecp256k1_generator_generate(const mp_obj_t assetarg){
     maybe_init_ctx();
     mp_buffer_info_t assetbuf;
     mp_get_buffer_raise(assetarg, &assetbuf, MP_BUFFER_READ);
@@ -1009,10 +1009,10 @@ STATIC mp_obj_t usecp256k1_generator_generate(const mp_obj_t assetarg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_generator_generate_obj, usecp256k1_generator_generate);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_generator_generate_obj, usecp256k1_generator_generate);
 
 // serialize generator
-STATIC mp_obj_t usecp256k1_generator_serialize(const mp_obj_t arg){
+static mp_obj_t usecp256k1_generator_serialize(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -1028,9 +1028,9 @@ STATIC mp_obj_t usecp256k1_generator_serialize(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_generator_serialize_obj, usecp256k1_generator_serialize);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_generator_serialize_obj, usecp256k1_generator_serialize);
 
-STATIC mp_obj_t usecp256k1_generator_parse(const mp_obj_t arg){
+static mp_obj_t usecp256k1_generator_parse(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -1050,10 +1050,10 @@ STATIC mp_obj_t usecp256k1_generator_parse(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_generator_parse_obj, usecp256k1_generator_parse);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_generator_parse_obj, usecp256k1_generator_parse);
 
 // pedersen_commit(value_blinding_factor, value, gen)
-STATIC mp_obj_t usecp256k1_pedersen_commit(const mp_obj_t blindarg, mp_obj_t valuearg, const mp_obj_t genarg){
+static mp_obj_t usecp256k1_pedersen_commit(const mp_obj_t blindarg, mp_obj_t valuearg, const mp_obj_t genarg){
     maybe_init_ctx();
     mp_buffer_info_t blindbuf;
     mp_get_buffer_raise(blindarg, &blindbuf, MP_BUFFER_READ);
@@ -1109,9 +1109,9 @@ STATIC mp_obj_t usecp256k1_pedersen_commit(const mp_obj_t blindarg, mp_obj_t val
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(usecp256k1_pedersen_commit_obj, usecp256k1_pedersen_commit);
+static MP_DEFINE_CONST_FUN_OBJ_3(usecp256k1_pedersen_commit_obj, usecp256k1_pedersen_commit);
 
-STATIC mp_obj_t usecp256k1_pedersen_commitment_serialize(const mp_obj_t arg){
+static mp_obj_t usecp256k1_pedersen_commitment_serialize(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -1127,10 +1127,10 @@ STATIC mp_obj_t usecp256k1_pedersen_commitment_serialize(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_pedersen_commitment_serialize_obj, usecp256k1_pedersen_commitment_serialize);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_pedersen_commitment_serialize_obj, usecp256k1_pedersen_commitment_serialize);
 
 
-STATIC mp_obj_t usecp256k1_pedersen_commitment_parse(const mp_obj_t arg){
+static mp_obj_t usecp256k1_pedersen_commitment_parse(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t buf;
     mp_get_buffer_raise(arg, &buf, MP_BUFFER_READ);
@@ -1150,7 +1150,7 @@ STATIC mp_obj_t usecp256k1_pedersen_commitment_parse(const mp_obj_t arg){
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_pedersen_commitment_parse_obj, usecp256k1_pedersen_commitment_parse);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_pedersen_commitment_parse_obj, usecp256k1_pedersen_commitment_parse);
 
 uint64_t get_uint64(mp_obj_t arg){
     uint64_t value = 0;
@@ -1175,7 +1175,7 @@ uint64_t get_uint64(mp_obj_t arg){
 }
 
 // vals, abfs, vbfs, psbtv.num_inputs
-STATIC mp_obj_t usecp256k1_pedersen_blind_generator_blind_sum(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_pedersen_blind_generator_blind_sum(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     mp_obj_list_t *vals = MP_OBJ_TO_PTR(args[0]);
     mp_obj_list_t *abfs = MP_OBJ_TO_PTR(args[1]);
@@ -1243,12 +1243,12 @@ STATIC mp_obj_t usecp256k1_pedersen_blind_generator_blind_sum(mp_uint_t n_args, 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_pedersen_blind_generator_blind_sum_obj, 4, usecp256k1_pedersen_blind_generator_blind_sum);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_pedersen_blind_generator_blind_sum_obj, 4, usecp256k1_pedersen_blind_generator_blind_sum);
 
 // surjection proofs
 
 // surjectionproof_initialize(in_assets, asset, seed, tags_to_use=None, iterations=100)
-STATIC mp_obj_t usecp256k1_surjectionproof_initialize(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_surjectionproof_initialize(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     secp256k1_fixed_asset_tag * in_assets_ptr = NULL;
     mp_obj_list_t *in_assets = NULL;
@@ -1316,12 +1316,12 @@ STATIC mp_obj_t usecp256k1_surjectionproof_initialize(mp_uint_t n_args, const mp
     items[1] = mp_obj_new_int_from_ull(input_index);
     return mp_obj_new_tuple(2, items);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_surjectionproof_initialize_obj, 3, usecp256k1_surjectionproof_initialize);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_surjectionproof_initialize_obj, 3, usecp256k1_surjectionproof_initialize);
 
 // surjectionproof_initialize_preallocated(proofptr, prooflen, in_assets, asset, seed, tags_to_use=None, iterations=100)
 // proofptr is a pointer to preallocated memory and prooflen is the length of availble memory
 // returns a tuple: (used prooflen, in_index)
-STATIC mp_obj_t usecp256k1_surjectionproof_initialize_preallocated(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_surjectionproof_initialize_preallocated(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     intptr_t proofptr = get_uint64(args[0]);
     size_t prooflen = get_uint64(args[1]);
@@ -1392,10 +1392,10 @@ STATIC mp_obj_t usecp256k1_surjectionproof_initialize_preallocated(mp_uint_t n_a
     items[1] = mp_obj_new_int_from_ull(input_index);
     return mp_obj_new_tuple(2, items);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_surjectionproof_initialize_preallocated_obj, 3, usecp256k1_surjectionproof_initialize_preallocated);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_surjectionproof_initialize_preallocated_obj, 3, usecp256k1_surjectionproof_initialize_preallocated);
 
 // surjectionproof_generate(proof, in_idx, in_tags, out_tag, in_abf, out_abf)
-STATIC mp_obj_t usecp256k1_surjectionproof_generate(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_surjectionproof_generate(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     mp_buffer_info_t proof;
     secp256k1_surjectionproof * ptr = NULL;
@@ -1448,10 +1448,10 @@ STATIC mp_obj_t usecp256k1_surjectionproof_generate(mp_uint_t n_args, const mp_o
     }
     return args[0];
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_surjectionproof_generate_obj, 6, usecp256k1_surjectionproof_generate);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_surjectionproof_generate_obj, 6, usecp256k1_surjectionproof_generate);
 
 // surjectionproof_serialize(proof) - proof is either a buffer or a pointer
-STATIC mp_obj_t usecp256k1_surjectionproof_serialize(const mp_obj_t arg){
+static mp_obj_t usecp256k1_surjectionproof_serialize(const mp_obj_t arg){
     maybe_init_ctx();
     mp_buffer_info_t proof;
     secp256k1_surjectionproof * ptr;
@@ -1479,10 +1479,10 @@ STATIC mp_obj_t usecp256k1_surjectionproof_serialize(const mp_obj_t arg){
     }
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_surjectionproof_serialize_obj, usecp256k1_surjectionproof_serialize);
+static MP_DEFINE_CONST_FUN_OBJ_1(usecp256k1_surjectionproof_serialize_obj, usecp256k1_surjectionproof_serialize);
 
 // rangeproof_sign(nonce, value, value_commitment, vbf, message, extra, gen, min_value=1, exp=0, min_bits=52)
-STATIC mp_obj_t usecp256k1_rangeproof_sign(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_rangeproof_sign(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     if(n_args < 7){
         mp_raise_ValueError(MP_ERROR_TEXT("Function requires at least 7 arguments"));
@@ -1567,11 +1567,11 @@ STATIC mp_obj_t usecp256k1_rangeproof_sign(mp_uint_t n_args, const mp_obj_t *arg
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_sign_obj, 7, usecp256k1_rangeproof_sign);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_sign_obj, 7, usecp256k1_rangeproof_sign);
 
 // rangeproof_sign_to(stream, mem_ptr, mem_len,
 //                    nonce, value, value_commitment, vbf, message, extra, gen, min_value=1, exp=0, min_bits=52)
-STATIC mp_obj_t usecp256k1_rangeproof_sign_to(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_rangeproof_sign_to(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     if(n_args < 10){
         mp_raise_ValueError(MP_ERROR_TEXT("Function requires at least 10 arguments"));
@@ -1669,11 +1669,11 @@ STATIC mp_obj_t usecp256k1_rangeproof_sign_to(mp_uint_t n_args, const mp_obj_t *
     return mp_obj_new_int_from_ull(prooflen);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_sign_to_obj, 10, usecp256k1_rangeproof_sign_to);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_sign_to_obj, 10, usecp256k1_rangeproof_sign_to);
 
 
 // rangeproof_rewind(proof, nonce, value_commitment, script_pubkey, generator)
-STATIC mp_obj_t usecp256k1_rangeproof_rewind(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_rangeproof_rewind(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     if(n_args < 5){
         mp_raise_ValueError(MP_ERROR_TEXT("Function requires 5 arguments"));
@@ -1750,10 +1750,10 @@ STATIC mp_obj_t usecp256k1_rangeproof_rewind(mp_uint_t n_args, const mp_obj_t *a
     return mp_obj_new_tuple(5, items);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_rewind_obj, 5, usecp256k1_rangeproof_rewind);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_rewind_obj, 5, usecp256k1_rangeproof_rewind);
 
 // rangeproof_verify(proof, value_commitment, script_pubkey, generator)
-STATIC mp_obj_t usecp256k1_rangeproof_verify(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_rangeproof_verify(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     if(n_args < 4){
         mp_raise_ValueError(MP_ERROR_TEXT("Function requires 4 arguments"));
@@ -1799,10 +1799,10 @@ STATIC mp_obj_t usecp256k1_rangeproof_verify(mp_uint_t n_args, const mp_obj_t *a
     return mp_obj_new_tuple(2, items);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_verify_obj, 4, usecp256k1_rangeproof_verify);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_verify_obj, 4, usecp256k1_rangeproof_verify);
 
 // rangeproof_rewind_from(stream, len, memptr, memlen, nonce, value_commitment, script_pubkey, generator)
-STATIC mp_obj_t usecp256k1_rangeproof_rewind_from(mp_uint_t n_args, const mp_obj_t *args){
+static mp_obj_t usecp256k1_rangeproof_rewind_from(mp_uint_t n_args, const mp_obj_t *args){
     maybe_init_ctx();
     if(n_args < 8){
         mp_raise_ValueError(MP_ERROR_TEXT("Function requires 8 arguments"));
@@ -1915,12 +1915,12 @@ STATIC mp_obj_t usecp256k1_rangeproof_rewind_from(mp_uint_t n_args, const mp_obj
     return mp_obj_new_tuple(5, items);
 }
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_rewind_from_obj, 8, usecp256k1_rangeproof_rewind_from);
+static MP_DEFINE_CONST_FUN_OBJ_VAR(usecp256k1_rangeproof_rewind_from_obj, 8, usecp256k1_rangeproof_rewind_from);
 
 
 /****************************** MODULE ******************************/
 
-STATIC const mp_rom_map_elem_t secp256k1_module_globals_table[] = {
+static const mp_rom_map_elem_t secp256k1_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_secp256k1) },
     { MP_ROM_QSTR(MP_QSTR_context_randomize), MP_ROM_PTR(&usecp256k1_context_randomize_obj) },
     { MP_ROM_QSTR(MP_QSTR_context_preallocated_size), MP_ROM_PTR(&usecp256k1_context_preallocated_size_obj) },
@@ -1980,7 +1980,7 @@ STATIC const mp_rom_map_elem_t secp256k1_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_surjectionproof_serialize), MP_ROM_PTR(&usecp256k1_surjectionproof_serialize_obj) },
 
 };
-STATIC MP_DEFINE_CONST_DICT(secp256k1_module_globals, secp256k1_module_globals_table);
+static MP_DEFINE_CONST_DICT(secp256k1_module_globals, secp256k1_module_globals_table);
 
 // Define module object.
 const mp_obj_module_t secp256k1_user_cmodule = {

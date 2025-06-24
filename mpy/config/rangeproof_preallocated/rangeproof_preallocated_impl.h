@@ -2,7 +2,6 @@
 #define _SECP256K1_RANGEPROOF_PREALLOCATED_IMPL_H_
 
 SECP256K1_INLINE static int secp256k1_rangeproof_sign_preallocated_impl(
- const secp256k1_ecmult_context* ecmult_ctx,
  const secp256k1_ecmult_gen_context* ecmult_gen_ctx,
  unsigned char *proof, size_t *plen, uint64_t min_value,
  const secp256k1_ge *commit, const unsigned char *blind, const unsigned char *nonce, int exp, int min_bits, uint64_t value,
@@ -153,7 +152,7 @@ SECP256K1_INLINE static int secp256k1_rangeproof_sign_preallocated_impl(
         secp256k1_sha256_write(&sha256_m, extra_commit, extra_commit_len);
     }
     secp256k1_sha256_finalize(&sha256_m, tmp);
-    if (!secp256k1_borromean_sign(ecmult_ctx, ecmult_gen_ctx, &proof[len], s, pubs, k, sec, rsizes, secidx, rings, tmp, 32)) {
+    if (!secp256k1_borromean_sign(ecmult_gen_ctx, &proof[len], s, pubs, k, sec, rsizes, secidx, rings, tmp, 32)) {
         return 0;
     }
     len += 32;
@@ -182,11 +181,10 @@ int secp256k1_rangeproof_sign_preallocated(const secp256k1_context* ctx, unsigne
     ARG_CHECK(message != NULL || msg_len == 0);
     ARG_CHECK(extra_commit != NULL || extra_commit_len == 0);
     ARG_CHECK(gen != NULL);
-    ARG_CHECK(secp256k1_ecmult_context_is_built(&ctx->ecmult_ctx));
     ARG_CHECK(secp256k1_ecmult_gen_context_is_built(&ctx->ecmult_gen_ctx));
     secp256k1_pedersen_commitment_load(&commitp, commit);
     secp256k1_generator_load(&genp, gen);
-    return secp256k1_rangeproof_sign_preallocated_impl(&ctx->ecmult_ctx, &ctx->ecmult_gen_ctx,
+    return secp256k1_rangeproof_sign_preallocated_impl(&ctx->ecmult_gen_ctx,
      proof, plen, min_value, &commitp, blind, nonce, exp, min_bits, value, message, msg_len, extra_commit, extra_commit_len, &genp,
      preallocated_ptr, allocated_len);
 }
@@ -326,8 +324,7 @@ SECP256K1_INLINE static int secp256k1_rangeproof_rewind_preallocated_inner(secp2
     return 1;
 }
 
-SECP256K1_INLINE static int secp256k1_rangeproof_verify_preallocated_impl(const secp256k1_ecmult_context* ecmult_ctx,
- const secp256k1_ecmult_gen_context* ecmult_gen_ctx,
+SECP256K1_INLINE static int secp256k1_rangeproof_verify_preallocated_impl(const secp256k1_ecmult_gen_context* ecmult_gen_ctx,
  unsigned char *blindout, uint64_t *value_out, unsigned char *message_out, size_t *outlen, const unsigned char *nonce,
  uint64_t *min_value, uint64_t *max_value, const secp256k1_ge *commit, const unsigned char *proof, size_t plen, const unsigned char *extra_commit, size_t extra_commit_len, const secp256k1_ge* genp,
  void * preallocated_ptr, intptr_t allocated_len) {
@@ -414,7 +411,7 @@ SECP256K1_INLINE static int secp256k1_rangeproof_verify_preallocated_impl(const 
     }
     for(i = 0; i < rings - 1; i++) {
         secp256k1_fe fe;
-        if (!secp256k1_fe_set_b32(&fe, &proof[offset]) ||
+        if (!secp256k1_fe_set_b32_limit(&fe, &proof[offset]) ||
             !secp256k1_ge_set_xquad(&c, &fe)) {
             return 0;
         }
@@ -454,7 +451,7 @@ SECP256K1_INLINE static int secp256k1_rangeproof_verify_preallocated_impl(const 
         secp256k1_sha256_write(&sha256_m, extra_commit, extra_commit_len);
     }
     secp256k1_sha256_finalize(&sha256_m, m);
-    ret = secp256k1_borromean_verify(ecmult_ctx, nonce ? evalues : NULL, e0, s, pubs, rsizes, rings, m, 32);
+    ret = secp256k1_borromean_verify(nonce ? evalues : NULL, e0, s, pubs, rsizes, rings, m, 32);
     if (ret && nonce) {
         /* Given the nonce, try rewinding the witness to recover its initial state. */
         secp256k1_scalar blind;
@@ -504,11 +501,10 @@ int secp256k1_rangeproof_rewind_preallocated(const secp256k1_context* ctx,
     ARG_CHECK(nonce != NULL);
     ARG_CHECK(extra_commit != NULL || extra_commit_len == 0);
     ARG_CHECK(gen != NULL);
-    ARG_CHECK(secp256k1_ecmult_context_is_built(&ctx->ecmult_ctx));
     ARG_CHECK(secp256k1_ecmult_gen_context_is_built(&ctx->ecmult_gen_ctx));
     secp256k1_pedersen_commitment_load(&commitp, commit);
     secp256k1_generator_load(&genp, gen);
-    return secp256k1_rangeproof_verify_preallocated_impl(&ctx->ecmult_ctx, &ctx->ecmult_gen_ctx,
+    return secp256k1_rangeproof_verify_preallocated_impl(&ctx->ecmult_gen_ctx,
      blind_out, value_out, message_out, outlen, nonce, min_value, max_value, &commitp, proof, plen, extra_commit, extra_commit_len, &genp,
      preallocated_ptr, allocated_len);
 }
